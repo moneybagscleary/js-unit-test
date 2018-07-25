@@ -2,7 +2,7 @@ import deepmerge = require('deepmerge');
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { Config } from './config';
+import { Config, Test, Suite } from './config';
 
 /**
  * Config file path.
@@ -19,6 +19,9 @@ export function safeFile(file: string): string {
 export const configDefaults: Config = {
     projectName: 'default',
     testUrl: 'localhost:4010',
+    rootTestPath: 'tests',
+    suites: [],
+    tests: []
 };
 
 /**
@@ -27,9 +30,7 @@ export const configDefaults: Config = {
 export function getConfig(): Config {
     let config: Config;
 
-    config = {
-      projectName: 'default'
-    };
+    config = configDefaults
   
     try {
       config = fs.readJsonSync(configFile);

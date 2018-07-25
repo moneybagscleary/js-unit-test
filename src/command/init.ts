@@ -15,7 +15,7 @@ export function init(options: InitOptions): void {
 
     if (options.skip) {
         // skip prompts and create with defaults
-        util.setConfig(util.configFile, { projectName: 'default' });
+        util.setConfig(util.configFile, util.configDefaults);
         return;
     }
     
@@ -23,12 +23,17 @@ export function init(options: InitOptions): void {
         {
             name: 'projectName',
             message: 'Project Name',
-            default: ('default' || undefined),
+            default: (util.configDefaults.projectName || undefined),
         },
         {
             name: 'testUrl',
             message: 'Test Site URL',
-            default: ('localhost:4010' || undefined)
+            default: (util.configDefaults.testUrl || undefined)
+        },
+        {
+            name: 'rootPath',
+            message: 'Tests Root Path',
+            default: (util.configDefaults.rootTestPath || undefined)
         }
     ];
     
@@ -36,7 +41,8 @@ export function init(options: InitOptions): void {
     inquirer.prompt(questions).then((answers: inquirer.Answers): void => {    
           util.setConfig(util.configFile, {
             projectName: answers.projectName,
-            testUrl: answers.testUrl
+            testUrl: answers.testUrl,
+            rootTestPath: answers.rootPath
           });
     });
 }
