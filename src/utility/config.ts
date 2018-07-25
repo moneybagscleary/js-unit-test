@@ -3,13 +3,14 @@ export interface Test {
     jsFilePath?: string;
 }
 
-export interface TestSuite {
-    testSuiteName?: string;
-    tests?: Test[];
+export interface Suite {
+    suiteName?: string;
+    tests?: string[];
 }
 
 export interface Config {
     projectName?: string;
     testUrl?: string;
-    testSuites?: TestSuite[];
+    suites?: Suite[];
+    tests?: Test[];
 }

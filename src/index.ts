@@ -11,12 +11,12 @@ program
     .action(init);
 
 program
-    .command('run [testName]')
+    .command('test [testName]')
     .description('Runs a configured test')
     .action(runTest);
 
 program
-    .command('run suite [testSuite]')
+    .command('suite [testSuite]')
     .description('Runs a configured test suite')
     .action(runSuite);
 

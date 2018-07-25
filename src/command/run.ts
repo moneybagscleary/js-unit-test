@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import Table = require('cli-table');
 
-import { Config, Test, TestSuite } from '../utility/config';
+import { Config, Test, Suite } from '../utility/config';
 import * as util from '../utility/utility';
 
 export function suites(): void {
@@ -12,11 +12,11 @@ export function suites(): void {
       head: ['Name', 'Number of tests']
     });
   
-    if (config.testSuites) {
-        config.testSuites.forEach(suite => {
+    if (config.suites) {
+        config.suites.forEach(suite => {
             let number = suite.tests ? suite.tests.length : 0;
             table.push([
-                suite.testSuiteName || placeholder,
+                suite.suiteName || placeholder,
                 number
             ]);
         });
@@ -27,48 +27,45 @@ export function suites(): void {
 
 export function runTest(testName: string) {
     const config: Config = util.getConfig();
-
-    if (config.testSuites != undefined && config.testSuites.length == 0) {
-        console.error('No test suites are configured.')
+    if (!config.tests || config.tests.length == 0) {
+        console.error('No tests are configured.')
         return;
     }
 
-    console.log(`Running ${chalk.green(testName)} against ${config.testUrl}`);
+    console.log(`Running test ${chalk.green(testName)} against ${config.testUrl}`);
 
-    if (config.testSuites) {
-        config.testSuites.forEach(suite => {
-            if (suite.tests) {
-                suite.tests
-                .filter(x => x.testName == testName)
-                .forEach(test => {
-                    _run(test);
-                });
-            }
-        });
+    let test = config.tests.find(x => x.testName == testName);
+    if (test) {
+        _run(test);
+    } else {
+        console.log('Could not find the test ' + testName + '.');
     }
 
 }
 
-export function runSuite(testSuite: string) {
+export function runSuite(suiteName: string) {
     const config: Config = util.getConfig();
 
-    let testSuites: TestSuite[] = [];
+    let suites: Suite[] = [];
 
-    if (config.testSuites) {
-        testSuites = config.testSuites.filter(x=>x.testSuiteName == testSuite);
+    if (config.suites) {
+        suites = config.suites.filter(x=>x.suiteName == suiteName);
     }
 
-    if (!testSuites || testSuites.length == 0) {
+    if (!suites || suites.length == 0) {
         console.error('No test suites are configured.')
         return;
     }
 
-    console.log(`Running ${chalk.green(testSuite)} against ${config.testUrl}`);
+    console.log(`Running suite ${chalk.green(suiteName)} against ${config.testUrl}`);
 
-    testSuites.forEach(suite => {
+    suites.forEach(suite => {
         if (suite.tests) {
-            suite.tests.forEach(test => {
-                _run(test);
+            suite.tests.forEach(testName => {
+                let test = config.tests.find(x => x.testName == testName);
+                if (test) {
+                    _run(test);
+                }
             })
         }
     });
