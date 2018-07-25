@@ -13,4 +13,5 @@ dist/
 node_modules/
 js-unit.json
 js-*.json
+*.js
 

@@ -20,7 +20,8 @@ export interface Config {
     projectName?: string;
     testUrl?: string;
     rootTestPath: string;
-    testResults?: TestResults    
+    testResults?: TestResults
+    showBrowser?: boolean
     suites?: Suite[];
     tests?: Test[];
 }

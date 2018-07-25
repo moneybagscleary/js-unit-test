@@ -2,7 +2,7 @@ import deepmerge = require('deepmerge');
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { Config, Test, Suite } from './config';
+import { Config } from './config';
 
 /**
  * Config file path.
@@ -20,6 +20,7 @@ export const configDefaults: Config = {
     projectName: 'default',
     testUrl: 'localhost:4010',
     rootTestPath: 'tests',
+    showBrowser: false,
     suites: [],
     tests: []
 };
