@@ -9,30 +9,34 @@ interface InitOptions {
 }
 
 export function init(options: InitOptions): void {
-    console.log('testing');
-
     if (fs.existsSync(util.configFile) && !options.force) {
         return console.error('Config file already exists');
     }
 
     if (options.skip) {
         // skip prompts and create with defaults
-        util.setConfig(util.configFile, { testName: 'default' });
+        util.setConfig(util.configFile, { projectName: 'default' });
         return;
     }
     
     const questions: inquirer.Questions = [
         {
-            name: 'testName',
-            message: 'Test Name.',
+            name: 'projectName',
+            message: 'Project Name',
             default: ('default' || undefined),
         },
+        {
+            name: 'testUrl',
+            message: 'Test Site URL',
+            default: ('localhost:4010' || undefined)
+        }
     ];
     
       // prompt user for config options
     inquirer.prompt(questions).then((answers: inquirer.Answers): void => {    
           util.setConfig(util.configFile, {
-            testName: answers.testName
+            projectName: answers.projectName,
+            testUrl: answers.testUrl
           });
     });
 }

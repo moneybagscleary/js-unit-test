@@ -1,11 +1,6 @@
-import chalk from 'chalk';
 import deepmerge = require('deepmerge');
 import * as fs from 'fs-extra';
-import * as glob from 'glob';
 import * as path from 'path';
-import { isString } from 'ts-util-is';
-import * as xml2js from 'xml2js';
-import { EOL } from 'os';
 
 import { Config } from './config';
 
@@ -14,12 +9,16 @@ import { Config } from './config';
  */
 export const configFile: string = path.join(process.cwd(), 'js-unit-test.json');
 
+/*
+ * Get safe file path
+ */
 export function safeFile(file: string): string {
     return file.replace(/\//g, '_');
 }
 
 export const configDefaults: Config = {
-    testName: 'default'    
+    projectName: 'default',
+    testUrl: 'localhost:4010',
 };
 
 /**
@@ -27,6 +26,10 @@ export const configDefaults: Config = {
  */
 export function getConfig(): Config {
     let config: Config;
+
+    config = {
+      projectName: 'default'
+    };
   
     try {
       config = fs.readJsonSync(configFile);

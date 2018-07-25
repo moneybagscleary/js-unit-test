@@ -1,5 +1,6 @@
 import * as program from 'commander';
 
+import { runTest, runSuite, suites } from './command/run'
 import { init } from './command/init';
 
 program
@@ -9,3 +10,21 @@ program
     .option('-s, --skip', 'Use defaults only and skip the option prompts.')
     .action(init);
 
+program
+    .command('run [testName]')
+    .description('Runs a configured test')
+    .action(runTest);
+
+program
+    .command('run suite [testSuite]')
+    .description('Runs a configured test suite')
+    .action(runSuite);
+
+program
+    .command('suites')
+    .description('List the configured test suites')
+    .action(suites);
+
+program
+    .version('1.0.0')
+    .parse(process.argv);
