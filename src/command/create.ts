@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { Config, Test, TestSuite } from '../utility/config';
+import { Config, Test, Suite } from '../utility/config';
 import * as util from '../utility/utility';
 
 export function create(name: string, description: string, cmd: any): void {
