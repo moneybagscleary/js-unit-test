@@ -1,4 +1,16 @@
 
 .DS_Store
-node_modules
 *.log
+
+# Editors
+.idea
+.settings
+.vs
+.vscode
+
+# Other
+dist/
+node_modules/
+js-unit.json
+js-*.json
+
