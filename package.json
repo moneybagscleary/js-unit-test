@@ -1,11 +1,16 @@
 {
-  "name": "unit-test",
+  "name": "js-testify",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "keywords": [],
-  "author": "",
+  "author": "Christopher Cleary",
   "preferGlobal": true,
+  "homepage": "https://github.com/moneybagscleary/js-unit-test",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moneybagscleary/js-unit-test"
+  },
   "scripts": {
     "lint": "tslint -c ./tslint.json -p ./tsconfig.json",
     "build": "tsc -p ./tsconfig.json",
