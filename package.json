@@ -13,7 +13,7 @@
     "release": "standard-version"
   },
   "bin": {
-    "js-unit": "bin/js-unit"
+    "jsTestify": "bin/jsTestify"
   },
   "files": [
     "bin/",

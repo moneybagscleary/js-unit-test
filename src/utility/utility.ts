@@ -7,7 +7,7 @@ import { Config } from './config';
 /**
  * Config file path.
  */
-export const configFile: string = path.join(process.cwd(), 'js-unit-test.json');
+export const configFile: string = path.join(process.cwd(), 'jsTestify.json');
 
 /*
  * Get safe file path
