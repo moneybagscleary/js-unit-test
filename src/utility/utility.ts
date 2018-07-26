@@ -20,7 +20,7 @@ export const configDefaults: Config = {
     projectName: 'default',
     testUrl: 'localhost:4010',
     rootTestPath: 'tests',
-    showBrowser: false,
+    puppeteerOpts: {},
     suites: [],
     tests: []
 };

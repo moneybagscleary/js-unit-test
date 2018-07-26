@@ -87,7 +87,7 @@ export function runSuite(suiteName: string) {
 function _createPreScriptSnippet(description: string, config: Config) {
     _cleanUpTests();
 
-    var headless = config.showBrowser ? 'false' : 'true';
+    var puppeteerOpts = config.puppeteerOpts ? JSON.stringify(config.puppeteerOpts) : '{}'
 
     script = [
         `const {expect} = require('chai')`,
@@ -99,7 +99,7 @@ function _createPreScriptSnippet(description: string, config: Config) {
         `let page`,
         EOL,
         `before(async function () {`,
-        `   browser = await puppeteer.launch({headless: ${headless}});`,
+        `   browser = await puppeteer.launch(${puppeteerOpts});`,
         `   page = await browser.newPage();`,
         `   await page.goto('${config.testUrl}');`,
         '})',

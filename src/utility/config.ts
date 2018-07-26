@@ -21,7 +21,7 @@ export interface Config {
     testUrl?: string;
     rootTestPath: string;
     testResults?: TestResults
-    showBrowser?: boolean
+    puppeteerOpts?: any
     suites?: Suite[];
     tests?: Test[];
 }
