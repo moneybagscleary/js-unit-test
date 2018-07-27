@@ -3,6 +3,7 @@ import Table = require('cli-table');
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { EOL } from 'os';
+import * as glob from 'glob';
 
 var Mocha = require('mocha');
 
@@ -89,6 +90,8 @@ function _createPreScriptSnippet(description: string, config: Config) {
 
     var puppeteerOpts = config.puppeteerOpts ? JSON.stringify(config.puppeteerOpts) : '{}'
 
+    let pageObjects = _getAllPageObjectFiles(config);
+
     script = [
         `const {expect} = require('chai')`,
         `const puppeteer = require('puppeteer')`,
@@ -97,7 +100,7 @@ function _createPreScriptSnippet(description: string, config: Config) {
         `// Define global variables`,
         `let browser`,
         `let page`,
-        EOL,
+        `${pageObjects}`,
         `before(async function () {`,
         `   browser = await puppeteer.launch(${puppeteerOpts});`,
         `   page = await browser.newPage();`,
@@ -110,6 +113,27 @@ function _createPreScriptSnippet(description: string, config: Config) {
         `})`,
         EOL,
     ].join(EOL);
+}
+
+function _getAllPageObjectFiles(config: Config): string  {
+    let returnValue = '';
+    let fileContent = '';
+
+    let files = glob.sync("**/*.pageObject.js", {
+        root: path.join(process.cwd(), config.rootTestPath)
+    });
+
+    if (files) {
+        files.forEach(function(file) {
+            fileContent = fs.readFileSync(path.join(process.cwd(), file)).toString();
+            returnValue = [
+                returnValue,
+                fileContent
+            ].join(EOL);
+        });
+    }
+
+    return returnValue;
 }
 
 function _createPostScriptSnippet() {
@@ -134,7 +158,7 @@ function _runTests() {
         mocha.addFile(file);
     
         mocha.run(function(failures) {
-            //_cleanUpTests();
+            _cleanUpTests();
             process.exitCode = failures ? -1 : 0;
         });    
     });
