@@ -22,7 +22,8 @@ export const configDefaults: Config = {
     rootTestPath: 'tests',
     puppeteerOpts: {},
     suites: [],
-    tests: []
+    tests: [],
+    userProfiles: []
 };
 
 /**

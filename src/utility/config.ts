@@ -16,12 +16,18 @@ export interface TestResults {
     testResultsPath?: string;
 }
 
+export interface UserProfile {
+    id: string;
+    value: any;
+}
+
 export interface Config {
     projectName?: string;
     testUrl?: string;
     rootTestPath: string;
-    testResults?: TestResults
-    puppeteerOpts?: any
+    testResults?: TestResults;
+    puppeteerOpts?: any;
     suites?: Suite[];
     tests?: Test[];
+    userProfiles?: UserProfile[];
 }

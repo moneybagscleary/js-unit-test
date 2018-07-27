@@ -33,30 +33,40 @@ export function suites(): void {
     console.log(table.toString());
   }
 
-export function runTest(testName: string) {
+export function runTest(testName: string, cmd: any) {
     const config: Config = util.getConfig();
     if (!config.tests || config.tests.length == 0) {
-        console.error('No tests are configured.')
-        return;
+        return console.error('No tests are configured.')
     }
 
-    console.log(`Running test ${chalk.green(testName)} against ${config.testUrl}`);
+    let profiles = cmd.userProfiles;
+
+    //console.log(`Running test ${chalk.green(testName)} against ${config.testUrl}`);
+    let userProfiles = profiles && profiles.length > 0 ? profiles : [""];
+
+    console.log(userProfiles);
 
     let test = config.tests.find(x => x.testName == testName);
-    if (test) {
-        _createPreScriptSnippet(`Running test ${chalk.green(testName)} against ${config.testUrl}`, config);
-        _generateTestScriptSnippet(test, config);
-    } else {
-        console.log('Could not find the test ' + testName + '.');
-    }
+    userProfiles.forEach(function (profile, index) {
+        if (test) {
+            let profileName = profile ? `using user profile ${chalk.green(profile)}` : '';
+            _createPreScriptSnippet(`Running test ${chalk.green(testName)} against ${chalk.green(config.testUrl)} ${profileName}`, config, profile);
+            _generateTestScriptSnippet(test, config);
+        } else {
+            console.log('Could not find the test ' + testName + '.');
+        }
 
+        _createTestFile(`test${index}`)
+    }); 
+    
     _runTests();
 }
 
-export function runSuite(suiteName: string) {
+export function runSuite(suiteName: string, cmd: any) {
     const config: Config = util.getConfig();
 
     let suites: Suite[] = [];
+    let profiles = cmd.userProfiles;
 
     if (config.suites) {
         suites = config.suites.filter(x=>x.suiteName == suiteName);
@@ -66,31 +76,37 @@ export function runSuite(suiteName: string) {
         return console.error('No test suites are configured.');
     }
 
-    console.log(`Running suite ${chalk.green(suiteName)} against ${config.testUrl}`);
+    //console.log(`Running suite ${chalk.green(suiteName)} against ${config.testUrl}`);
+    let userProfiles = profiles && profiles.length > 0 ? profiles : [""];
+    userProfiles.forEach(function (profile, index) {
+        let profileName = profile ? `using user profile ${chalk.green(profile)}` : '';
+        _createPreScriptSnippet(`Running suite ${chalk.green(suiteName)} against ${chalk.green(config.testUrl)} ${profileName}`, config, profile);
 
-    _createPreScriptSnippet(`Running suite ${suiteName} against ${config.testUrl}`, config)
+        suites.forEach(suite => {
+            if (suite.tests) {
+                suite.tests.forEach(testName => {
+                    let test = config.tests.find(x => x.testName == testName);
+                    if (test) {
+                        _generateTestScriptSnippet(test, config);
+                    }
+                })
+            }
+        });
 
-    suites.forEach(suite => {
-        if (suite.tests) {
-            suite.tests.forEach(testName => {
-                let test = config.tests.find(x => x.testName == testName);
-                if (test) {
-                    _generateTestScriptSnippet(test, config);
-                }
-            })
-        }
+        //once the test scripts are generated
+
+        _createTestFile(`test${index}`)
     });
 
-    //once the test scripts are generated
     _runTests();
 }
 
-function _createPreScriptSnippet(description: string, config: Config) {
-    _cleanUpTests();
-
+function _createPreScriptSnippet(description: string, config: Config, profileID: string) {
     var puppeteerOpts = config.puppeteerOpts ? JSON.stringify(config.puppeteerOpts) : '{}'
 
     let pageObjects = _getAllPageObjectFiles(config);
+
+    let userProfile = _getUserProfile(profileID, config);
 
     script = [
         `const {expect} = require('chai')`,
@@ -100,6 +116,7 @@ function _createPreScriptSnippet(description: string, config: Config) {
         `// Define global variables`,
         `let browser`,
         `let page`,
+        `let userProfile = ${userProfile}`,
         `${pageObjects}`,
         `before(async function () {`,
         `   browser = await puppeteer.launch(${puppeteerOpts});`,
@@ -115,17 +132,29 @@ function _createPreScriptSnippet(description: string, config: Config) {
     ].join(EOL);
 }
 
+function _getUserProfile(profileID: string, config: Config): string {
+    var value = "{}";
+
+    let profile = config.userProfiles.find(x => x.id == profileID);
+
+    if (profile) {
+        value = JSON.stringify(profile.value);
+    }
+
+    return value;
+}
+
 function _getAllPageObjectFiles(config: Config): string  {
     let returnValue = '';
     let fileContent = '';
 
-    let files = glob.sync("**/*.pageObject.js", {
+    let files = glob.sync("/*.pageObject.js", {
         root: path.join(process.cwd(), config.rootTestPath)
     });
 
     if (files) {
         files.forEach(function(file) {
-            fileContent = fs.readFileSync(path.join(process.cwd(), file)).toString();
+            fileContent = fs.readFileSync(file).toString();
             returnValue = [
                 returnValue,
                 fileContent
@@ -143,37 +172,50 @@ function _createPostScriptSnippet() {
     ].join(EOL);
 }
 
-function _runTests() {
+function _createTestFile(fileName: string) {
     _createPostScriptSnippet();
 
+    let file: string = path.join(process.cwd(), `runnableTest/${fileName}.js`);
+
+    fs.outputFileSync(file, script);
+}
+
+function _runTests() {
     var mocha = new Mocha({ timeout: 30000 });
 
-    let file: string = path.join(process.cwd(), 'runnableTest/test.js');
+    let files = glob.sync("/*.js", {
+        root: path.join(process.cwd(), 'runnableTest')
+    });
 
-    fs.outputFile(file, script, (error: Error) => {
-        if (error) {
-          return console.error(error);
-        }
+    if (files) {
+        files.forEach(function (file){
+            mocha.addFile(file);
+        });    
 
-        mocha.addFile(file);
-    
         mocha.run(function(failures) {
             _cleanUpTests();
             process.exitCode = failures ? -1 : 0;
         });    
-    });
+    }
 }
 
 function _cleanUpTests() {
-    let file: string = path.join(process.cwd(), 'runnableTest/test.js');
+    let files = glob.sync("/*.js", {
+        root: path.join(process.cwd(), 'runnableTest')
+    });
+
+    if (files) {
+        files.forEach(function (file) {
+            if (fs.existsSync(file)) {
+                fs.removeSync(file);
+            }
+        });
+    }
+
     let dir: string = path.join(process.cwd(), 'runnableTest')
 
-    if (fs.existsSync(file)) {
-        fs.removeSync(file);
-
-        if (fs.ensureDirSync(dir)) {
-            fs.rmdirSync(dir);
-        }
+    if (fs.ensureDirSync(dir)) {
+        fs.rmdirSync(dir);
     }
 }
 

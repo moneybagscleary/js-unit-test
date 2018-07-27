@@ -11,6 +11,8 @@
 # Other
 dist/
 node_modules/
+tests/
+jsTestify.json
 js-unit.json
 js-*.json
 *.js

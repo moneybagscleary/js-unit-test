@@ -14,11 +14,17 @@ program
 program
     .command('test [testName]')
     .description('Runs a configured test')
+    .option('-u, --userProfiles <profiles>', 
+            'The list of user profiles to run this test as, the test will loop over the user profiles',
+            function (val) { return val.split(',')})
     .action(runTest);
 
 program
     .command('suite [testSuite]')
     .description('Runs a configured test suite')
+    .option('-u, --userProfiles <profiles>', 
+            'The list of user profiles to run this test as, the test will loop over the user profiles',
+            function (val) { return val.split(',')})
     .action(runSuite);
 
 program
