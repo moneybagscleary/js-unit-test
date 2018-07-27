@@ -21,5 +21,21 @@
         "Testing 123"
       ]
     }
+  ],
+  "userProfiles":[
+    {
+      "id": "user1",
+      "value": {
+        "testProp": "testing",
+        "user": 1
+      }
+    },
+    {
+      "id": "user2",
+      "value": {
+        "testProp": "testing",
+        "user": 2
+      }
+    }
   ]
 }
