@@ -44,8 +44,6 @@ export function runTest(testName: string, cmd: any) {
     //console.log(`Running test ${chalk.green(testName)} against ${config.testUrl}`);
     let userProfiles = profiles && profiles.length > 0 ? profiles : [""];
 
-    console.log(userProfiles);
-
     let test = config.tests.find(x => x.testName == testName);
     userProfiles.forEach(function (profile, index) {
         if (test) {
