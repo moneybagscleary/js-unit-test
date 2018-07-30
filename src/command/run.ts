@@ -148,7 +148,7 @@ function _getAllPageObjectFiles(config: Config): string  {
     let returnValue = '';
     let fileContent = '';
 
-    let files = glob.sync("/*.pageObject.js", {
+    let files = glob.sync(`${config.rootTestPath}/**/*.pageObject.js`, {
         root: path.join(process.cwd(), config.rootTestPath)
     });
 
