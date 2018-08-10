@@ -31,6 +31,16 @@ List all available suites and the number of tests associated which are specified
 jsTestify suites
 ```
 
+# Run Create
+Create a new test or suite for the Config.
+Options:
+- `-t` or `--test` will create a test and js file with the name specified
+- `-s` or `--suite` will create a suite with the name specified
+
+```bash
+jsTestify create [suiteOrTestName] [suiteOrTestDescription] -[type]
+```
+
 ## Run Test
 Run a specified test name.
 
